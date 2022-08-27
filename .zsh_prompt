@@ -1,0 +1,39 @@
+autoload -Uz add-zsh-hook vcs_info
+setopt prompt_subst
+add-zsh-hook precmd my_precmd
+
+zstyle ':vcs_info:git:*' formats '%b'
+
+#MAGENTA=125
+#ORANGE=$166
+#GREEN=64
+#PURPLE=61
+#SORTA WHITE=244
+#RED=196
+
+function my_precmd {
+  vcs_info
+
+  local user='%B%F{125}%n %f%b'
+  local at_white='%B%F{244}at %f%b'
+  local host='%B%F{166}%m %f%b'
+  local in_white='%B%F{244}in %f%b'
+  local local_path='%F{64}%4~ %f'
+
+  local git_branch_color='61'
+  local git_branch=""
+
+  [[ "${vcs_info_msg_0_}" == "master" || "${vcs_info_msg_0_}" == "main" ]] && git_branch_color='196'
+
+  if [[  "${vcs_info_msg_0_}" != "" ]]
+    then
+      local git_branch="%B%F{244}on %f%b%B%F{${git_branch_color}}${vcs_info_msg_0_}%f%b "
+  fi
+
+  psvar[1]="${user}${at_white}${host}${in_white}${local_path}${git_branch}"
+  psvar[2]="${git_branch}"
+}
+
+NEWLINE=$'\n'
+PROMPT='${psvar[1]}${NEWLINE}'
+#RPROMPT='${psvar[2]}'
